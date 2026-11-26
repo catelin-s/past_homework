@@ -1,0 +1,204 @@
+/**********************************************************
+* Project 1: Metro Simulator
+* CS 15
+* README
+* Author: Catelin Smith (csmith48)
+*********************************************************/
+
+Compile/run:
+     - Compile using
+            make MetroSim
+     - run executable with
+            ./MetroSim stationsFile passFile [commands]
+
+
+Program Purpose:
+---------------
+     The purpose of this program is to create a train simulator 
+     that allows the user to add and remove users to and from the 
+     train
+
+
+Acknowledgements: 
+---------------
+     I referred to Professor Kazerounian's presentations and looked up errors
+     in Stack Overflow when a valgrind error confused me. I also referred to
+     the CS15 website on interacting with files in C++ that was linked to
+     on the main CS15 website
+
+Files: 
+------
+
+main.cpp:
+     Main file that reads in the given files and creates an instance
+     of the MetroSim class
+
+MetroSim.cpp:
+     Implementation of MetroSim class.  Main functionality of running 
+     the Metro Simulation, should be able to move trains and deal with 
+     passengers going on/off the train.
+
+MetroSim.h:
+     Interface of MetroSim class.
+
+PassengerQueue.cpp:
+     Implementation of PassengerQueue class. Its primary purpose is to
+     allow passengers to join and exit a queue (which will represent
+     a car on the train)
+
+PassengerQueue.h:
+     Interface of PassengerQueue class
+
+Passenger.cpp:
+     Implementation of Passenger struct. These passengers are the
+     elements that will make up PassengerQueue
+
+Passenger.h:
+     Interface of Passenger struct
+
+stations.txt:
+     an example file containing a list of stations.
+
+test_commands.txt:
+     sample list of commands that you could give to the simulator
+
+the_metroSim:
+     reference implementation for students to see how 
+
+
+
+Data Structures:
+--------------
+
+     For creating PassengerQueue, I chose to use a linked list. Linked 
+     lists are lists that are created by connecting together structs 
+     called nodes, which contain an element and a pointer to the next 
+     node in the list. Unlike array lists, linked lists do not have 
+     indices and do not have a given capacity. However, like array lists, 
+     they use heap memory to create their nodes. An advantage of linked lists
+     is the fact that inserting or removing an element at the front will 
+     be easier than with an array list since all of the subsequent elements
+     do not need to be shifted over. A disadvantage is that since there are 
+     no indices, it is a little harder to find a specific element in the 
+     linked list based off of its position.
+     
+     My reasoning behind using a linked list for PassengerQueue was 
+     that on a queue, you are only going to be either adding to the 
+     back or removing from the front. Since retrieving elements in 
+     the middle of the queue was not that important and since linked 
+     lists are more effective than vectors at removing from the front, 
+     I chose to use a linked list. Additionally, std::list already 
+     contains functions that will remove from the front and add to 
+     the back, unlike std::vector.
+
+     For creating MetroSim, I decided to use an array list (std::vector)
+     instead. An array list is another type of data structure that consists
+     of an array that can grow as more elements are put into it. It is
+     able to do this by using memory on the heap to create new arrays
+     of different sizes. An advantage of array lists is that it is easier
+     to find an element within the array since each element has an index.
+     In MetroSim, it was important to be able to access an element at a 
+     given index, such as when placing passengers onto the train or taking 
+     them off. Linked lists are not equipped to handle finding elements 
+     at an index, so using an array list via std::vector made the 
+     implementation a lot easier. A disadvantage of array lists is that
+     inserting elements at the front can take a long time since it needs
+     to shift over all of the subsequent elements, but since the MetroSim
+     class never needed to do this, this was not a problem.
+
+
+Testing:
+-------
+
+     For this assignment, I started by unit testing the Passenger
+     function print(). Since the only aspect of Passenger that I
+     was allowed to edit was the print() function, I did not test
+     to see if the different constructors worked. Since the print()
+     function creates an output, I created my own Passenger and
+     ran print() on it, visually checking the output to see that it
+     had the desired formatting.
+
+     Then, knowing that Passenger.cpp was correct, I moved on to
+     PassengerQueue.cpp. This class had multiple functions I needed
+     to test, so I started first with a simple one: size(). This was
+     important to get right because many of the other unit tests
+     rely on confirming the size of the queue is correct. I tested
+     size() on an empty PassengerQueue, and it worked. After that,
+     I tested the enqueue() function on an empty PassengerQueue
+     and a PassengerQueue that already had a passenger enqueued 
+     onto it. I created a separate unit test to confirm that the
+     passengers were enqueued in the correct order and also that
+     the PassengerQueue print() function works. Looking at the
+     print() function's output, I could see that the passengers
+     were placed in the right order and that print() outputs
+     the correct string. I then tested the dequeue() function
+     on a single element and on multiple elements.
+
+     After creating PassengerQueue.cpp, I began working on MetroSim.cpp.
+     In order to test this class, I moved most of the functions and
+     variables from private to public. Because of this, once I moved
+     them back to private, unit_tests would not compile unless I
+     removed those lines. I left them commented out so you can see
+     how I tested each function, even if these tests cannot run 
+     anymore. I started by testing my constructor for MetroSim
+     and making sure it started out with the correct values for
+     certain variables such as the current station and number
+     of passenger being zero. Then, I created two unit test that
+     checked to see if the add_passenger() function worked when
+     adding one passenger to an empty train and when adding
+     multiple passengers. To make sure it was adding the passengers
+     properly, I used to print() function and checked visually
+     to see if the correct passengers were on the train. This
+     essentially varified that the print() function worked, but
+     I made a seperate unit tests to show that it worked when
+     the train was empty, had one passenger, and had multiple
+     passengers. Then, I checked the exit_train() function when
+     one passenger needed to be removed and when multiple passengers
+     should be removed. I also unit tested the add_station() function
+     when a single station was being added to an empty vector for
+     the station names and when multiple stations were being added.
+
+     Up until this point, all of my functions had been working well,
+     which I was pleasantly surprised by. Since my MetroSim seemed
+     to be working so far, I moved on to creating and testing my
+     main.cpp and the functions that could not be unit tested. I
+     diff tested my MetroSim against the program that was giving
+     using the provided station and commands file. It was at this
+     point that I realized I had forgotten to make my program able
+     to read in commands from a command file, which definitely does
+     not bode well for diff testing. Once I solved that problem, I
+     successfully diff tested it with good results, proving that
+     my MetroSim functions worked for the most part. After that, I
+     created a file that contained only a few stations and a
+     command file that would move the train until it reached the
+     first station again, which tests the looping stations edge
+     case. My MetroSim passed that diff test, so I created a new
+     command file that did not end in the command "m f" since 
+     MetroSim should also terminate once the command file ends,
+     no matter what the last command is. Diff testing this was
+     not successful since my program would not terminate. Once
+     I moved the if-statement that controlled that specific
+     termination, it worked well.
+
+     Then, I diff tested faulty input files, such as the station
+     file and the command file not existing. Diff testing
+     non-existant station files was successful, but when I ran
+     valgrind on my program when inputing a non-existant command
+     file, there were a lot of leaks. I figured out that it was
+     because I opened the output file before opening the command
+     file, so if my program terminated, then the output file
+     would remain open, causing a leak. Reordering this fixed
+     my problem, and my program worked smoothly after that.
+
+
+Part that you found most difficult:
+---------------------------------
+
+     Even though we reviewed it in class, I still found using ifstreams
+     and ofstreams to be very difficult. Reading from the station file
+     was fine, but figuring out how to redirect specific outputs to
+     an output file and bring in commands from a command file was a
+     little harder. 
+
+Time Spent: 17 hours
+--------- 
